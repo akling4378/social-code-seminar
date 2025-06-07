@@ -97,27 +97,61 @@ export default function SeminarPage() {
   };
 
   const handleSubmitResponse = async () => {
-    try {
-      // Capture the user input before clearing it
-      const submittedText = userInput;
-      setUserSubmittedText(submittedText);
-      
-      // Start banter immediately
-      startBanter();
-      
-      const currentBreakpointData = chapterData.breakpoints[currentBreakpoint];
-      const knowledgeBase = await loadKnowledgeBase();
-      
-      const globalInstructions = knowledgeBase.globalPromptInstructions || {
-        baseContext: "You are in an interactive seminar called 'The Social Code' on human interdependence.",
-        behaviorRules: [
-          "Stay in character and maintain their personalities.",
-          "Professor Hartwell should address the student by name when he first speaks.",
-          "If the comment is off-topic, inappropriate, or disruptive, Drew should IMMEDIATELY interrupt and redirect the conversation."
-        ],
-        responseFormat: "Format your response as dialogue only.",
-        continuationPrompt: "Continue the seminar discussion."
-      };
+  // Temporarily disabled API call for testing deployment
+  /*
+  try {
+    // Load knowledge base for context
+    const knowledgeBase = await loadKnowledgeBase();
+    
+    // Create prompt with knowledge base and user input
+    const prompt = `You are in an interactive seminar called "The Social Code" on human interdependence. Here is the context:
+
+CONCEPTS:
+${knowledgeBase.concepts.map(c => `- ${c.concept}: ${c.explanation}`).join('\n')}
+
+CHARACTERS:
+${Object.entries(knowledgeBase.characters).map(([name, info]) => 
+  `- ${name}: ${info.temperament || info.role} - ${info.voice}`
+).join('\n')}
+
+A student named ${readerName} just said: "${userInput}"
+
+Continue the seminar discussion. Respond as Professor Hartwell and/or the students (Blake, Drew, Casey, Avery) would naturally react. Professor Hartwell should address ${readerName} by name when he first speaks. Stay in character and maintain their personalities. Format your response as dialogue only.`;
+
+    const response = await fetch('/api/claude', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: prompt,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Parse and format the response
+    const formattedResponse = parseDialogue(data.response);
+    setApiResponse(formattedResponse);
+    setShowCallOnMe(false);
+    setUserInput('');
+  } catch (error) {
+    console.error('API Error:', error);
+    setApiResponse('Sorry, there was an error processing your comment. Please try again.');
+    setShowCallOnMe(false);
+    setUserInput('');
+  }
+  */
+  
+  // Simple test response
+  setApiResponse("Test response - API temporarily disabled");
+  setShowCallOnMe(false);
+  setUserInput('');
+};
       
       const chapterInstructions = chapterData.promptInstructions || {};
       
